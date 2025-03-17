@@ -35,6 +35,7 @@ class Product(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     is_favourite = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    total_stock = models.PositiveIntegerField(default=0,blank=True, null=True)  # Stock level for this variant
     subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name="products")
 
     class Meta:
