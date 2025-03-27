@@ -14,12 +14,14 @@ const api = axios.create({
 
 api.interceptors.request.use(config => {
     let csrfToken = Cookies.get("csrftoken");
-    
+    console.log('========csrf token from cookies==========',csrfToken)
     if (!csrfToken) {
         csrfToken = localStorage.getItem("csrftoken");
+        console.log('========csrf token from local_sto==========',csrfToken)
     }
     
     if (csrfToken) {
+        console.log(csrfToken,'000000000')
         config.headers["X-CSRFToken"] = csrfToken;
         config.headers["X-Requested-With"] = "XMLHttpRequest";
     } else {
