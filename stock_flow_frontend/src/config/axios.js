@@ -16,14 +16,14 @@ const api = axios.create({
 
 api.interceptors.request.use(config => {
     let csrfToken = Cookies.get("csrftoken");
-    console.log('========csrf token from cookies==========',csrfToken)
+    console.log('19csrf token from cookies==========',csrfToken)
     const cookies = document.cookie.split('; ')
     const csrfCookie = cookies.find(row => row.startsWith('csrftoken=')).split('=')[1]
-    console.log('cookies = ',csrfCookie)
+    console.log('22cookies = ',csrfCookie)
     
     if (!csrfCookie) {
         csrfCookie = localStorage.getItem("csrftoken");
-        console.log('========csrf token from local_sto==========',csrfToken)
+        console.log('26========csrf token from local_sto==========',csrfToken)
     }
     
     if (csrfCookie) {
@@ -31,7 +31,7 @@ api.interceptors.request.use(config => {
         config.headers["X-CSRFToken"] = csrfCookie;
         config.headers["X-Requested-With"] = "XMLHttpRequest";
     } else {
-        console.warn("No CSRF token available");
+        console.warn("34No CSRF token available");
     }
     
     return config;
