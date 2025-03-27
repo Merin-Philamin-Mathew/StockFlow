@@ -30,7 +30,6 @@ useEffect(() => {
       const response =  await axios.get(`${BASE_URL}/admin/csrf/`,{
         withCredentials: true,
     });
-    
       
       console.log("CSRF cookie should be set now",response);
       console.log("CSRF cookie should be set now",response.data);
