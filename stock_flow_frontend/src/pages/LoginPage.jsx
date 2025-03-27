@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import api from "@/config/axios";
+const BASE_URL = import.meta.env.VITE_BASEURL;
+
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -22,8 +24,13 @@ useEffect(() => {
   const fetchCSRFToken = async () => {
     try {
     
-      const response = await api.get(`/admin/csrf/`, {
-      });
+      // const response = await axios.get(`/admin/csrf/`, {
+      // });
+
+      const response =  await axios.get(`${BASE_URL}/admin/csrf/`,{
+        withCredentials: true,
+    });
+    
       
       console.log("CSRF cookie should be set now",response);
       console.log("CSRF cookie should be set now",response.data);
