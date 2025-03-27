@@ -23,13 +23,13 @@ useEffect(() => {
       const response = await api.get(`/admin/csrf/`, {
       });
       
+      console.log("CSRF cookie should be set now",response);
+      console.log("CSRF cookie should be set now",response.data);
+      console.log("CSRF cookie should be set now",response.data.csrftoken);
+      localStorage.setItem("csrftoken", response.data.csrftoken);
       if (response.ok) {
-        console.log("CSRF cookie should be set now",response);
-        console.log("CSRF cookie should be set now",response.data);
-        console.log("CSRF cookie should be set now",response.data.csrftoken);
         const hasCookie = document.cookie.includes('csrftoken');
         console.log("CSRF cookie exists:", hasCookie);
-        localStorage.setItem("csrftoken", response.data.csrftoken);
 
       }
     } catch (error) {
