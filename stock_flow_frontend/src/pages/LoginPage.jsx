@@ -17,9 +17,11 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+
 useEffect(() => {
   const fetchCSRFToken = async () => {
     try {
+    
       const response = await api.get(`/admin/csrf/`, {
       });
       
