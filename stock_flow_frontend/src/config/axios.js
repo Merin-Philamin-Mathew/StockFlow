@@ -27,7 +27,7 @@ api.interceptors.request.use(config => {
     }
     
     if (csrfCookie) {
-        console.log(csrfToken,'000000000')
+        console.log(csrfToken,'.........')
         config.headers["X-CSRFToken"] = csrfCookie;
         config.headers["X-Requested-With"] = "XMLHttpRequest";
     } else {
