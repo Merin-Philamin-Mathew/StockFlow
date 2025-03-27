@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Variant, VariantOption,Category, SubCategory, ProductVariantItem, ProductConfiguration
-
+from .models import *
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -16,6 +15,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
+        extra_kwargs = {
+            'hsn_code': {'required': False}, }
   
 
 class VariantSerializer(serializers.ModelSerializer):
@@ -63,6 +64,42 @@ class ProductVariantItemCreateUpdateSerializer(serializers.ModelSerializer):
             'hsn_code': {'required': False},
         }
     
+    def validate(self, data):
+        """
+        Validate that no duplicate product configurations exist for the same product.
+        """
+        product = data['product']
+        variant_options = data['variant_options']
+        
+        # Sort variant options to ensure consistent comparison
+        sorted_variant_options = sorted(variant_options)
+        
+        # Get all existing product variants for this product
+        existing_variants = ProductVariantItem.objects.filter(product=product)
+        
+        for existing_variant in existing_variants:
+            # Get configurations for this variant
+            existing_configs = ProductConfiguration.objects.filter(product_item=existing_variant)
+            existing_option_ids = sorted([str(config.variant_option.id) for config in existing_configs])
+            
+            # Check if the configuration is the same (same set of variant options)
+            if existing_option_ids == sorted_variant_options:
+                variant_options_info = []
+                for option_id in variant_options:
+                    try:
+                        option = VariantOption.objects.get(id=option_id)
+                        variant_options_info.append(f"{option.variant.name}: {option.option}")
+                    except VariantOption.DoesNotExist:
+                        continue
+                
+                option_details = ", ".join(variant_options_info)
+                raise serializers.ValidationError(
+                    f"A product variant with the same configuration already exists. "
+                    f"Configuration: {option_details}"
+                )
+        
+        return data
+    
     def create(self, validated_data):
         variant_options = validated_data.pop('variant_options')
         
@@ -84,7 +121,6 @@ class ProductVariantItemCreateUpdateSerializer(serializers.ModelSerializer):
         
         # Copy hsn_code from product if not provided
         if 'hsn_code' not in validated_data or not validated_data['hsn_code']:
-            # If the product has an hsn_code field, copy it
             product = validated_data['product']
             if hasattr(product, 'hsn_code') and product.hsn_code:
                 validated_data['hsn_code'] = product.hsn_code
@@ -105,7 +141,39 @@ class ProductVariantItemCreateUpdateSerializer(serializers.ModelSerializer):
         return product_item
     
     def update(self, instance, validated_data):
-        # Update fields
+        # Check for duplicates if variant_options are being updated
+        if 'variant_options' in validated_data:
+            variant_options = validated_data['variant_options']
+            product = instance.product
+            
+            # Sort variant options to ensure consistent comparison
+            sorted_variant_options = sorted(variant_options)
+            
+            # Get all existing product variants for this product except the current instance
+            existing_variants = ProductVariantItem.objects.filter(product=product).exclude(id=instance.id)
+            
+            for existing_variant in existing_variants:
+                # Get configurations for this variant
+                existing_configs = ProductConfiguration.objects.filter(product_item=existing_variant)
+                existing_option_ids = sorted([str(config.variant_option.id) for config in existing_configs])
+                
+                # Check if the configuration is the same (same set of variant options)
+                if existing_option_ids == sorted_variant_options:
+                    variant_options_info = []
+                    for option_id in variant_options:
+                        try:
+                            option = VariantOption.objects.get(id=option_id)
+                            variant_options_info.append(f"{option.variant.name}: {option.option}")
+                        except VariantOption.DoesNotExist:
+                            continue
+                    
+                    option_details = ", ".join(variant_options_info)
+                    raise serializers.ValidationError(
+                        f"A product variant with the same configuration already exists. "
+                        f"Configuration: {option_details}"
+                    )
+        
+        # Existing update logic
         instance.quantity = validated_data.get('quantity', instance.quantity)
         instance.price = validated_data.get('price', instance.price)
         
@@ -156,3 +224,87 @@ class ProductVariantItemCreateUpdateSerializer(serializers.ModelSerializer):
                     pass
                     
         return instance
+
+
+class StockTransactionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Stock Transactions
+    """
+    product_variant_details = serializers.SerializerMethodField()
+    user_username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = StockTransaction
+        fields = [
+            'id', 
+            'product_variant', 
+            'product_variant_details',
+            'quantity', 
+            'transaction_type', 
+            'timestamp', 
+            'user', 
+            'user_username',
+            'notes', 
+            'reference_number'
+        ]
+        read_only_fields = ['timestamp']
+
+    def get_product_variant_details(self, obj):
+        """
+        Get detailed information about the product variant
+        """
+        variant = obj.product_variant
+        return {
+            'product_name': variant.product.name,
+            'product_code': variant.product_code,
+            'configurations': [
+                {
+                    'variant_name': config.variant_option.variant.name,
+                    'option_value': config.variant_option.option
+                } for config in variant.configurations.all()
+            ]
+        }
+
+class LowStockAlertSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Low Stock Alerts
+    """
+    product_variant_details = serializers.SerializerMethodField()
+    current_stock = serializers.SerializerMethodField()
+
+    class Meta:
+        model = LowStockAlert
+        fields = [
+            'id', 
+            'product_variant', 
+            'product_variant_details',
+            'threshold', 
+            'is_active', 
+            'last_notified',
+            'current_stock'
+        ]
+
+    def get_product_variant_details(self, obj):
+        """
+        Get detailed information about the product variant
+        """
+        variant = obj.product_variant
+        return {
+            'product_name': variant.product.name,
+            'product_code': variant.product_code,
+            'configurations': [
+                {
+                    'variant_name': config.variant_option.variant.name,
+                    'option_value': config.variant_option.option
+                } for config in variant.configurations.all()
+            ]
+        }
+
+    def get_current_stock(self, obj):
+        """
+        Get current stock of the product variant
+        """
+        return obj.product_variant.quantity
+
+
+

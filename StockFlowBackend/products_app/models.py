@@ -1,6 +1,9 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+import random
 
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -26,17 +29,19 @@ class SubCategory(models.Model):
         return f"{self.category.name} - {self.name}"
 
 
+
 class Product(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    product_id = models.BigIntegerField(unique=True, db_index=True)  # Base product identifier
-    name = models.CharField(max_length=255, db_index=True)  # Common name for all variants
+    product_id = models.BigIntegerField(unique=True, db_index=True, blank=True, null=True)  # Auto-generated now
+    name = models.CharField(max_length=255, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     is_favourite = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    total_stock = models.PositiveIntegerField(default=0,blank=True, null=True)  # Stock level for this variant
+    total_stock = models.PositiveIntegerField(default=0, blank=True, null=True)
     subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name="products")
+    hsn_code = models.CharField(max_length=255, blank=True, null=True)  # Add HSN code field to Product model
 
     class Meta:
         db_table = "products"
@@ -45,6 +50,18 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+
+# Signal to generate product_id before saving a new Product
+@receiver(pre_save, sender=Product)
+def generate_product_id(sender, instance, **kwargs):
+    # Only generate if product_id is not set
+    if not instance.product_id:
+        # Generate a unique 8-digit ID
+        while True:
+            product_id = random.randint(10000000, 99999999)
+            if not Product.objects.filter(product_id=product_id).exists():
+                instance.product_id = product_id
+                break
 
 
 class Variant(models.Model):
@@ -99,3 +116,69 @@ class ProductConfiguration(models.Model):  # Changed name from Product_Configura
 
     def __str__(self):
         return f"{self.product_item.product.name} - {self.variant_option.variant.name}: {self.variant_option.option}"
+
+import uuid
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+
+class StockTransaction(models.Model):
+    """
+    Model to track stock transactions (additions and removals)
+    """
+    TRANSACTION_TYPES = (
+        ('add', 'Stock Addition'),
+        ('remove', 'Stock Removal'),
+        ('adjustment', 'Stock Adjustment')
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product_variant = models.ForeignKey('ProductVariantItem', on_delete=models.CASCADE, related_name='stock_transactions')
+    quantity = models.IntegerField()
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    notes = models.TextField(blank=True, null=True)
+    
+    # Optional reference to source document (like purchase order or sales invoice)
+    reference_number = models.CharField(max_length=255, blank=True, null=True)
+    
+    class Meta:
+        db_table = 'stock_transactions'
+        ordering = ['-timestamp']
+        verbose_name_plural = 'Stock Transactions'
+
+    def __str__(self):
+        return f"{self.product_variant} - {self.transaction_type} - {self.quantity} units"
+
+    def save(self, *args, **kwargs):
+        # Update product variant stock when transaction is saved
+        if self.transaction_type == 'add':
+            self.product_variant.quantity += self.quantity
+        elif self.transaction_type == 'remove':
+            self.product_variant.quantity -= self.quantity
+        
+        self.product_variant.save()
+        super().save(*args, **kwargs)
+
+class LowStockAlert(models.Model):
+    """
+    Model to track and manage low stock alerts
+    """
+    product_variant = models.OneToOneField('ProductVariantItem', on_delete=models.CASCADE)
+    threshold = models.IntegerField(default=10)
+    is_active = models.BooleanField(default=True)
+    last_notified = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        db_table = 'low_stock_alerts'
+
+    def __str__(self):
+        return f"Low Stock Alert for {self.product_variant}"
+
+    def check_stock_level(self):
+        """
+        Check if current stock is below threshold
+        """
+        return self.product_variant.quantity <= self.threshold
+
