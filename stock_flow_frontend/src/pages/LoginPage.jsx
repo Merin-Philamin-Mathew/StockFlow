@@ -24,9 +24,13 @@ useEffect(() => {
       });
       
       if (response.ok) {
-        console.log("CSRF cookie should be set now");
+        console.log("CSRF cookie should be set now",response);
+        console.log("CSRF cookie should be set now",response.data);
+        console.log("CSRF cookie should be set now",response.data.csrftoken);
         const hasCookie = document.cookie.includes('csrftoken');
         console.log("CSRF cookie exists:", hasCookie);
+        localStorage.setItem("csrftoken", response.data.csrftoken);
+
       }
     } catch (error) {
       console.error("Error fetching CSRF token:", error);
