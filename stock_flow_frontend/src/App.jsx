@@ -1,8 +1,8 @@
+// App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-
-
+import DashboardPage from "./pages/DashboardPage";
 // Protected route component
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
@@ -14,14 +14,6 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Placeholder Dashboard component
-const Dashboard = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Dashboard</h1>
-    <p>Welcome to the Product Inventory System</p>
-  </div>
-);
-
 function App() {
   return (
     <Router>
@@ -31,11 +23,26 @@ function App() {
           path="/dashboard" 
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <DashboardPage/>
             </ProtectedRoute>
           } 
         />
         <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/products" element={
+          <ProtectedRoute>
+            <Navigate to="/dashboard" state={{ activeTab: "products" }} />
+          </ProtectedRoute>
+        } />
+        <Route path="/categories" element={
+          <ProtectedRoute>
+            <Navigate to="/dashboard" state={{ activeTab: "categories" }} />
+          </ProtectedRoute>
+        } />
+        <Route path="/stock" element={
+          <ProtectedRoute>
+            <Navigate to="/dashboard" state={{ activeTab: "stock" }} />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Router>
   );

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,20 +17,38 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+useEffect(() => {
+  const fetchCSRFToken = async () => {
+    try {
+      const response = await api.get(`/admin/csrf/`, {
+      });
+      
+      if (response.ok) {
+        console.log("CSRF cookie should be set now");
+        const hasCookie = document.cookie.includes('csrftoken');
+        console.log("CSRF cookie exists:", hasCookie);
+      }
+    } catch (error) {
+      console.error("Error fetching CSRF token:", error);
+    }
+  };
+  
+  fetchCSRFToken();
+}, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
     try {
-
-
-      const response = await api.post("/api/login/", {
+      const response = await api.post("admin/login/", {
         username,
         password,
       });
 
       if (response.status === 200) {
+        // Store authentication token if your backend provides one
         localStorage.setItem("isAuthenticated", "true");
         
         // Redirect to dashboard or product list page

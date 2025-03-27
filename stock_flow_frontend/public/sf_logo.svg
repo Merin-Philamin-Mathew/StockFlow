@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Base cube -->
+  <path d="M50 15L15 35V70L50 90L85 70V35L50 15Z" fill="none" stroke="#000000" stroke-width="4" stroke-linejoin="round"/>
+  
+  <!-- Top face -->
+  <path d="M50 15L15 35L50 55L85 35L50 15Z" fill="#ffffff" stroke="#000000" stroke-width="4" stroke-linejoin="round"/>
+  
+  <!-- Right face -->
+  <path d="M85 35L50 55V90L85 70V35Z" fill="#e6e6e6" stroke="#000000" stroke-width="4" stroke-linejoin="round"/>
+  
+  <!-- Left face -->
+  <path d="M15 35L50 55V90L15 70V35Z" fill="#cccccc" stroke="#000000" stroke-width="4" stroke-linejoin="round"/>
+  
+  <!-- Center line (vertical) -->
+  <path d="M50 15V55" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Center line (horizontal top face) -->
+  <path d="M15 35L85 35" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+</svg>
