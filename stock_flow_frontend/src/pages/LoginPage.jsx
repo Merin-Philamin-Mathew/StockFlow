@@ -59,7 +59,7 @@ useEffect(() => {
 
       if (response.status === 200) {
         // Store authentication token if your backend provides one
-        localStorage.setItem("isAuthenticated", "true");
+        // localStorage.setItem("isAuthenticated", "true");
         
         // Redirect to dashboard or product list page
         // navigate("/dashboard");
