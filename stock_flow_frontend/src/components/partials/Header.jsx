@@ -31,7 +31,6 @@ function Header() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
     localStorage.setItem('isAuthenticated', 'false');
     navigate('/login');
   };

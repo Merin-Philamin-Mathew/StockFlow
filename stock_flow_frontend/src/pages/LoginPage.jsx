@@ -31,9 +31,7 @@ useEffect(() => {
         withCredentials: true,
     });
       
-      console.log("CSRF cookie should be set now",response);
-      console.log("CSRF cookie should be set now",response.data);
-      console.log("CSRF cookie should be set now",response.data.csrftoken);
+      console.log("CSRF cookie should be set now",response?.data?.csrftoken);
       localStorage.setItem("csrftoken", response.data.csrftoken);
       if (response.ok) {
         const hasCookie = document.cookie.includes('csrftoken');
@@ -45,7 +43,7 @@ useEffect(() => {
     }
   };
   
-  fetchCSRFToken();
+  // fetchCSRFToken();
 }, []);
 
   const handleSubmit = async (e) => {
@@ -54,7 +52,7 @@ useEffect(() => {
     setIsLoading(true);
 
     try {
-      const response = await api.post("admin/login/", {
+      const response = await axios.post(`${BASE_URL}/admin/login/`, {
         username,
         password,
       });
