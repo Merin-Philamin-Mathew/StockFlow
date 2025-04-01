@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { LogOut, Package, Moon, Sun } from 'lucide-react';
+import api from '@/config/axios';
 
 function Header() {
   const navigate = useNavigate();
@@ -30,9 +31,20 @@ function Header() {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
-  const handleLogout = () => {
-    localStorage.setItem('isAuthenticated', 'false');
-    navigate('/login');
+  const handleLogout =async () => {
+    try {
+      const response = await api.post("admin/logout/");
+
+      if (response.status === 200) {
+        // Store authentication token if your backend provides one
+        localStorage.setItem('isAuthenticated', 'false');
+        
+        // Redirect to dashboard or product list page
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error(error)
+    } 
   };
 
   return (

@@ -17,6 +17,15 @@ api.interceptors.request.use(config => {
     try{
          let csrfToken = Cookies.get("csrftoken");
     console.log('19csrf token from cookies==========',csrfToken)
+    // const cookies = document.cookie.split('; ')
+    //     console.log('24',cookies)
+    // const csrfCookie = cookies.find(row => row.startsWith('csrftoken=')).split('=')[1]
+    // console.log('23cookies = ',csrfCookie)
+    
+    if (!csrfToken) {
+        // csrfCookie = localStorage.getItem("csrftoken");
+        console.log('27========csrf token from local_sto==========',csrfToken)
+    }
     
     if (csrfToken) {
         console.log(csrfToken,'.........')

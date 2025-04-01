@@ -20,31 +20,29 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
 
-useEffect(() => {
-  const fetchCSRFToken = async () => {
-    try {
-    
-      // const response = await axios.get(`/admin/csrf/`, {
-      // });
-
-      const response =  await axios.get(`${BASE_URL}/admin/csrf/`,{
-        withCredentials: true,
-    });
+// useEffect(() => {
+//   const fetchCSRFToken = async () => {
+//     try {
+//       const response =  await axios.get(`${BASE_URL}/admin/csrf/`,{
+//         withCredentials: true,
+//     });
       
-      console.log("CSRF cookie should be set now",response?.data?.csrftoken);
-      localStorage.setItem("csrftoken", response.data.csrftoken);
-      if (response.ok) {
-        const hasCookie = document.cookie.includes('csrftoken');
-        console.log("CSRF cookie exists:", hasCookie);
+//       console.log("CSRF cookie should be set now",response);
+//       console.log("CSRF cookie should be set now",response.data);
+//       console.log("CSRF cookie should be set now",response.data.csrftoken);
+//       localStorage.setItem("csrftoken", response.data.csrftoken);
+//       if (response.ok) {
+//         const hasCookie = document.cookie.includes('csrftoken');
+//         console.log("CSRF cookie exists:", hasCookie);
 
-      }
-    } catch (error) {
-      console.error("Error fetching CSRF token:", error);
-    }
-  };
+//       }
+//     } catch (error) {
+//       console.error("Error fetching CSRF token:", error);
+//     }
+//   };
   
-  // fetchCSRFToken();
-}, []);
+//   fetchCSRFToken();
+// }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,7 +50,7 @@ useEffect(() => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${BASE_URL}/admin/login/`, {
+      const response = await api.post("admin/login/", {
         username,
         password,
       });

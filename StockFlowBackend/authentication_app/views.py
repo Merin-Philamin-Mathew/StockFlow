@@ -15,8 +15,10 @@ def get_csrf_token(request):
 class AdminLoginView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
+        print(request.headers)
         username = request.data.get('username')
         password = request.data.get('password')
+
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
@@ -28,7 +30,9 @@ class AdminLogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
         logout(request)
-        return Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+        response.delete_cookie("csrftoken")
+        return response
 
 

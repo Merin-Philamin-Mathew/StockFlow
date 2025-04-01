@@ -34,9 +34,6 @@ BACKEND_BASE_URL = env('BACKENDBASEURL')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 
-CSRF_COOKIE_SECURE = False  
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -57,8 +54,9 @@ INSTALLED_APPS = [
 
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
-CSRF_USE_SESSIONS = False
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_SESSION_SECURE = False  # Set to True in production with HTTPS
+# CSRF_USE_SESSIONS = False
+# CSRF_COOKIE_SAMESITE = 'Lax'
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
     "http://localhost:5173",
@@ -66,7 +64,7 @@ CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS',  default=[
     "http://localhost:5173",
 ])
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True 
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 CORS_ALLOW_HEADERS = [
     "accept",
