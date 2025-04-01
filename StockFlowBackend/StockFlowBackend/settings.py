@@ -52,17 +52,17 @@ INSTALLED_APPS = [
 
 ]
 
-CSRF_COOKIE_HTTPONLY = False
+# CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
-CSRF_SESSION_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 # CSRF_USE_SESSIONS = False
-# CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
-    "http://localhost:5173",
+    FRONTEND_BASE_URL
 ])
-CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS',  default=[
-    "http://localhost:5173",
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
+    FRONTEND_BASE_URL
 ])
 CORS_ALLOW_CREDENTIALS = True 
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
