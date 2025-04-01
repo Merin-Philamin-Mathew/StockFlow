@@ -62,7 +62,7 @@ useEffect(() => {
         localStorage.setItem("isAuthenticated", "true");
         
         // Redirect to dashboard or product list page
-        navigate("/dashboard");
+        // navigate("/dashboard");
       }
     } catch (error) {
       setError(
