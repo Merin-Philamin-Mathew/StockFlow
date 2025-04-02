@@ -33,7 +33,7 @@ function App() {
             <Navigate to="/dashboard" state={{ activeTab: "products" }} />
           </ProtectedRoute>
         } />
-        <Route path="/categories" element={
+        {/* <Route path="/categories" element={
           <ProtectedRoute>
             <Navigate to="/dashboard" state={{ activeTab: "categories" }} />
           </ProtectedRoute>
@@ -42,7 +42,7 @@ function App() {
           <ProtectedRoute>
             <Navigate to="/dashboard" state={{ activeTab: "stock" }} />
           </ProtectedRoute>
-        } />
+        } /> */}
       </Routes>
     </Router>
   );

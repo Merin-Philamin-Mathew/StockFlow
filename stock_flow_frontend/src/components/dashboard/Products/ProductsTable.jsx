@@ -187,7 +187,7 @@ const ProductsTable = ({ products, refreshData }) => {
                       </div>
                       
                       {/* Stock Adjustment */}
-                      <div className="flex items-center gap-2">
+                      {/* <div className="flex items-center gap-2">
                         <Button 
                           variant="outline" 
                           size="icon"
@@ -214,7 +214,7 @@ const ProductsTable = ({ products, refreshData }) => {
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
