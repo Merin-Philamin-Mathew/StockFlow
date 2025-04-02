@@ -62,8 +62,8 @@ CSRF_COOKIE_SAMESITE = env('CSRF_COOKIE_SAMESITE', default='Lax')
 
 # CSRF_USE_SESSIONS = False
 
-CORS_ALLOWED_ORIGINS = [origin.strip('"') for origin in env('CORS_ALLOWED_ORIGINS').split(',')]
-CSRF_TRUSTED_ORIGINS = [origin.strip('"') for origin in env('CSRF_TRUSTED_ORIGINS').split(',')]
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173","https://stock-flow.merinphilamin.site"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5173","https://stock-flow.merinphilamin.site"]
 
 CORS_ALLOW_CREDENTIALS = True 
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
