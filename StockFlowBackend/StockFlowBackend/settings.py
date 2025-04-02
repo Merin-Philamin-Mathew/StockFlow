@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 ]
 
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_DOMAIN = None
+CSRF_COOKIE_DOMAIN = env('CSRF_COOKIE_DOMAIN', default=None)
 # Set to True in production with HTTPS
 CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=False)
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
