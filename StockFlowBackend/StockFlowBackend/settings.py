@@ -52,8 +52,8 @@ INSTALLED_APPS = [
 
 ]
 
-# CSRF_COOKIE_HTTPONLY = False
-
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_DOMAIN = None
 # Set to True in production with HTTPS
 CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=False)
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
@@ -64,6 +64,9 @@ CSRF_COOKIE_SAMESITE = env('CSRF_COOKIE_SAMESITE', default='Lax')
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173","https://stock-flow.merinphilamin.site"]
 CSRF_TRUSTED_ORIGINS = ["http://localhost:5173","https://stock-flow.merinphilamin.site"]
+
+# Enable this to ensure Django returns a CSRF cookie on GET requests
+CSRF_COOKIE_NAME = 'csrftoken'
 
 CORS_ALLOW_CREDENTIALS = True 
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
